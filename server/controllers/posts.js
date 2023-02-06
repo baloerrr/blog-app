@@ -25,20 +25,45 @@ const getPost = (req,res) => {
 }
 
 const addPost = (req,res) => {
-    
+    const query = 'INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`) VALUES (?)'
+
+    const values = [
+        req.body.title,
+        req.body.desc,
+        req.body.img,
+        req.body.cat,
+        req.body.date,
+        user.id
+    ]
+
+    db.query(query, [values], (err, data) => {
+        if(err) return res.status(500).json(err)
+        return res.json("Post has been created.");
+    })
 }
 
 const updatePost = (req,res) => {
-    
+    const postId = req.params.id
+    const q =
+    "UPDATE posts SET `title`=?,`desc`=?,`img`=?,`cat`=? WHERE `id` = ? AND `uid` = ?";
+
+  const values = [req.body.title, req.body.desc, req.body.img, req.body.cat];
+
+  db.query(q, [...values, postId, user.id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json("Post has been updated.");
+  });
 }
 
 const deletePost = (req,res) => {
-    // code auth token 
+    const postId = req.params.id;
+    const q = "DELETE FROM posts WHERE `id` = ? AND `uid` = ?";
 
-    // const postId = req.params.id;
-    // const query = "DELETE FROM posts WHERE `id` = ? AND `uid` = ?";
+    db.query(q, [postId, user.id], (err, data) => {
+      if (err) return res.status(403).json("You can delete only your post!");
 
-    // db.query(query, [])
+      return res.json("Post has been deleted!");
+    });
 }
 
 export { getPosts, getPost, addPost, updatePost, deletePost }
